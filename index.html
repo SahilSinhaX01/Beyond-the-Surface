@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABYSS | Interactive Ocean Descent</title>
+    <!-- Premium Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Plus+Jakarta+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Soundscape Controller -->
+    <button class="sound-toggle" aria-label="Toggle atmospheric soundscape">
+        <svg class="icon-sound-on" viewBox="0 0 24 24" width="24" height="24">
+            <path fill="currentColor" d="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.85 14,18.71V20.77C18.01,19.86 21,16.28 21,12C21,7.72 18.01,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.77 16.5,12M12,4L8.5,7.5H4V16.5H8.5L12,20V4Z" />
+        </svg>
+        <svg class="icon-sound-off hide" viewBox="0 0 24 24" width="24" height="24">
+            <path fill="currentColor" d="M12,4L8.5,7.5H4V16.5H8.5L12,20V4M19,12C19,12.94 18.8,13.82 18.46,14.64L19.97,16.15C20.63,14.91 21,13.5 21,12C21,7.72 18.01,4.14 14,3.23V5.29C16.89,6.15 19,8.83 19,12M16.5,12C16.5,11.2 16.27,10.46 15.89,9.83L14,7.97V11.88L16.44,14.32C16.48,13.57 16.5,12.8 16.5,12M4.27,3L3,4.27L7.73,9H4V15H8L12,19V13.27L16.25,17.52C15.58,18.04 14.83,18.44 14,18.71V20.77C15.38,20.44 16.63,19.78 17.7,18.97L19.73,21L21,19.73L12.39,11.12L4.27,3Z" />
+        </svg>
+        <span>Atmosphere Off</span>
+    </button>
+
+    <!-- Submarine Depth Indicator / Progress Bar -->
+    <div class="depth-gauge-container">
+        <div class="depth-track"></div>
+        <div class="depth-sub" id="depthSub">
+            <svg viewBox="0 0 40 24" width="36" height="22">
+                <!-- Submarine vector shape -->
+                <path fill="#00f3ff" d="M 28 6 H 20 V 2 A 1 1 0 0 0 18 2 V 6 H 14 A 1 1 0 0 0 14 8 H 28 A 1 1 0 0 0 28 6 Z"/>
+                <rect x="18" y="0" width="2" height="6" fill="#00f3ff"/>
+                <path fill="#00e5ff" d="M 32 8 C 32 8 36 8 38 12 C 40 16 36 20 32 20 H 8 C 8 20 2 20 0 16 C 0 12 4 8 8 8 Z"/>
+                <circle cx="12" cy="14" r="2.5" fill="#050a12"/>
+                <circle cx="20" cy="14" r="2.5" fill="#050a12"/>
+                <circle cx="28" cy="14" r="2.5" fill="#050a12"/>
+                <rect x="0" y="11" width="3" height="6" fill="#ff007f" rx="1.5"/>
+            </svg>
+            <div class="depth-digital" id="depthDigital">0m</div>
+        </div>
+    </div>
+
+    <!-- Side Dot Navigation -->
+    <nav class="side-nav" aria-label="Section navigation">
+        <a href="#surface" class="nav-dot active" data-index="0" aria-label="Ocean Surface">
+            <span class="dot-label">Surface (0m)</span>
+        </a>
+        <a href="#sunlight" class="nav-dot" data-index="1" aria-label="Sunlight Zone">
+            <span class="dot-label">Sunlight Zone (200m)</span>
+        </a>
+        <a href="#twilight" class="nav-dot" data-index="2" aria-label="Twilight Zone">
+            <span class="dot-label">Twilight Zone (1,000m)</span>
+        </a>
+        <a href="#midnight" class="nav-dot" data-index="3" aria-label="Midnight Zone">
+            <span class="dot-label">Midnight Zone (4,000m)</span>
+        </a>
+        <a href="#trench" class="nav-dot" data-index="4" aria-label="Hadal Trench">
+            <span class="dot-label">Hadal Trench (11,000m)</span>
+        </a>
+    </nav>
+
+    <!-- Custom Bubble Cursor Effect (Desktop only) -->
+    <div class="cursor-bubbles" id="cursorBubbles"></div>
+
+    <main class="parallax-container">
+        
+        <!-- SECTION 1: THE SURFACE -->
+        <section id="surface" class="parallax-section active" data-index="0">
+            <!-- Layers -->
+            <div class="layer bg-layer" data-speed="0.15">
+                <div class="sky-gradient"></div>
+                <!-- Sun -->
+                <svg class="sun-svg" viewBox="0 0 200 200" width="200" height="200">
+                    <defs>
+                        <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stop-color="#fffbde" stop-opacity="1" />
+                            <stop offset="25%" stop-color="#ffe67e" stop-opacity="0.8" />
+                            <stop offset="100%" stop-color="#ffb834" stop-opacity="0" />
+                        </radialGradient>
+                    </defs>
+                    <circle cx="100" cy="100" r="90" fill="url(#sunGlow)" />
+                </svg>
+            </div>
+            
+            <div class="layer mid-layer" data-speed="0.4">
+                <!-- Distant clouds & hills -->
+                <svg class="clouds-svg" viewBox="0 0 1440 320" preserveAspectRatio="none">
+                    <path fill="rgba(255, 255, 255, 0.08)" d="M0,160L48,176C96,192,192,224,288,208C384,192,480,128,576,122.7C672,117,768,171,864,186.7C960,203,1056,181,1152,165.3C1248,149,1344,139,1392,133.3L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+                </svg>
+                
+                <!-- Yacht floating -->
+                <div class="yacht-wrapper">
+                    <svg class="yacht-svg" viewBox="0 0 120 80" width="120" height="80">
+                        <path d="M15,55 L35,55 L40,30 L37,28 Z" fill="#ffffff" opacity="0.9" />
+                        <path d="M45,53 L75,53 L78,15 L74,13 Z" fill="#e0f7fa" />
+                        <path d="M10,55 L90,55 L100,45 L15,45 Z" fill="#0d47a1" />
+                        <path d="M12,45 L98,45 L88,58 L18,58 Z" fill="#ffffff" />
+                        <line x1="50" y1="45" x2="50" y2="10" stroke="#37474f" stroke-width="2" />
+                        <polygon points="50,12 85,25 50,38" fill="#ffffff" opacity="0.95" stroke="#cfd8dc" stroke-width="1" />
+                        <!-- Sail flag -->
+                        <polygon points="50,10 40,15 50,20" fill="#ff1744" />
+                    </svg>
+                </div>
+            </div>
+            
+            <div class="layer fore-layer" data-speed="0.8">
+                <!-- Large Foreground Waves -->
+                <svg class="waves-svg" viewBox="0 0 1440 240" preserveAspectRatio="none">
+                    <path fill="var(--color-surface-wave)" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,117.3C960,139,1056,181,1152,186.7C1248,192,1344,160,1392,144L1440,128L1440,240L1392,240C1344,240,1248,240,1152,240C1056,240,960,240,864,240C768,240,672,240,576,240C480,240,384,240,288,240C192,240,96,240,48,240L0,240Z"></path>
+                </svg>
+            </div>
+
+            <!-- Content Layer -->
+            <div class="section-content">
+                <div class="visual-badge">0m - Sea Level</div>
+                <h1>ABYSS</h1>
+                <p class="tagline">An immersive vertical journey into the ocean's depths.</p>
+                <div class="scroll-prompt">
+                    <p>Scroll to plunge</p>
+                    <svg class="bounce-arrow" viewBox="0 0 24 24" width="32" height="32">
+                        <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M19 12l-7 7-7-7"/>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: SUNLIGHT ZONE -->
+        <section id="sunlight" class="parallax-section" data-index="1">
+            <div class="layer bg-layer" data-speed="0.2">
+                <div class="light-beams"></div>
+                <!-- Ambient rising background bubbles -->
+                <div class="ambient-bubbles" id="sunlightBubbles"></div>
+            </div>
+
+            <div class="layer mid-layer" data-speed="0.5">
+                <!-- Coral reef silhouettes -->
+                <svg class="reef-mid" viewBox="0 0 1440 600" preserveAspectRatio="none">
+                    <!-- Stylized soft coral clusters -->
+                    <path fill="rgba(0, 180, 216, 0.15)" d="M -50,600 L -50,450 C -10,430 20,470 50,480 C 80,490 120,430 160,420 C 220,400 280,480 340,460 C 400,440 450,380 520,390 C 600,400 650,490 730,470 C 800,450 860,390 920,400 C 1000,410 1080,480 1160,460 C 1240,440 1310,380 1380,410 C 1430,430 1470,470 1500,480 L 1500,600 Z"/>
+                    <!-- Fish school vectors -->
+                    <g fill="rgba(255, 255, 255, 0.25)">
+                        <path d="M 200,250 L 212,246 L 210,250 L 212,254 Z M 225,238 L 237,234 L 235,238 L 237,242 Z M 190,265 L 202,261 L 200,265 L 202,269 Z M 240,248 L 252,244 L 250,248 L 252,252 Z M 220,260 L 232,256 L 230,260 L 232,264 Z" class="swim-animation"/>
+                    </g>
+                </svg>
+            </div>
+
+            <div class="layer fore-layer" data-speed="0.85">
+                <!-- Large Sea Kelp & Foreground Reef -->
+                <svg class="kelp-fore" viewBox="0 0 1440 800" preserveAspectRatio="none">
+                    <!-- Kelp strands on left and right -->
+                    <path fill="var(--color-sunlight-kelp)" d="M 0,800 C 40,700 20,550 50,400 C 70,300 90,150 70,0 L 110,0 C 120,150 90,300 80,450 C 70,600 120,700 80,800 Z" opacity="0.85"/>
+                    <path fill="var(--color-sunlight-kelp)" d="M 1360,800 C 1320,700 1340,550 1310,400 C 1290,300 1270,150 1290,0 L 1330,0 C 1310,150 1330,300 1340,450 C 1350,600 1300,700 1340,800 Z" opacity="0.75"/>
+                    <!-- Low bottom reef silhouette -->
+                    <path fill="var(--color-sunlight-reef)" d="M -20,800 L -20,680 Q 80,630 180,660 Q 280,690 380,640 Q 480,590 580,650 Q 680,710 780,670 Q 880,630 980,660 Q 1080,690 1180,640 Q 1280,590 1380,660 Q 1430,680 1460,670 L 1460,800 Z"/>
+                </svg>
+            </div>
+
+            <div class="section-content">
+                <div class="visual-badge">200m - The Epipelagic</div>
+                <h2>The Sunlight Zone</h2>
+                <p class="tagline font-accent">The vibrant cradle of ocean life.</p>
+                <p class="description">Spanning the top 200 meters, this zone absorbs over 90% of all solar energy. It is home to thriving coral reefs, vast kelp forests, and the vast majority of marine biodiversity.</p>
+            </div>
+        </section>
+
+        <!-- SECTION 3: TWILIGHT ZONE -->
+        <section id="twilight" class="parallax-section" data-index="2">
+            <div class="layer bg-layer" data-speed="0.25">
+                <div class="depth-shadow"></div>
+                <!-- Sun ray sparkles getting dim -->
+                <div class="dim-rays"></div>
+                <!-- Floating organic marine snow particles -->
+                <div class="marine-snow" id="twilightSnow"></div>
+            </div>
+
+            <div class="layer mid-layer" data-speed="0.55">
+                <!-- Whale Silhouette -->
+                <div class="whale-wrapper">
+                    <svg class="whale-svg" viewBox="0 0 400 180" width="350" height="157">
+                        <path fill="rgba(10, 34, 64, 0.45)" d="M 380,60 C 340,45 280,30 200,35 C 130,40 80,60 50,85 C 30,102 10,110 0,115 C 10,125 35,130 60,115 C 80,105 110,95 130,96 C 160,98 180,105 210,115 C 250,128 310,130 350,110 C 375,98 390,85 400,80 C 395,78 390,70 380,60 Z" />
+                        <!-- Tail fin -->
+                        <path fill="rgba(10, 34, 64, 0.45)" d="M 0,115 C 5,100 15,75 5,60 C 12,70 22,88 25,95 C 28,102 24,110 20,112 Z"/>
+                        <!-- Side fin -->
+                        <path fill="rgba(8, 28, 54, 0.6)" d="M 180,100 C 175,120 160,150 145,160 C 145,150 160,120 170,103 Z" />
+                    </svg>
+                </div>
+            </div>
+
+            <div class="layer fore-layer" data-speed="0.8">
+                <!-- Floating Jellyfish Vector -->
+                <div class="jellyfish-container">
+                    <svg class="jelly-svg jelly-1" viewBox="0 0 100 180" width="90" height="162">
+                        <defs>
+                            <linearGradient id="jellyGrad1" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stop-color="#00f3ff" stop-opacity="0.8" />
+                                <stop offset="60%" stop-color="#7b2cbf" stop-opacity="0.4" />
+                                <stop offset="100%" stop-color="#7b2cbf" stop-opacity="0" />
+                            </linearGradient>
+                        </defs>
+                        <!-- Bell -->
+                        <path fill="url(#jellyGrad1)" d="M 10,60 C 10,20 90,20 90,60 C 90,70 80,75 50,70 C 20,75 10,70 10,60 Z" />
+                        <!-- Tentacles -->
+                        <path stroke="url(#jellyGrad1)" stroke-width="2" fill="none" d="M 25,72 Q 20,110 30,150 Q 25,170 30,180" />
+                        <path stroke="url(#jellyGrad1)" stroke-width="2" fill="none" d="M 40,73 Q 48,115 42,155 Q 46,170 42,180" />
+                        <path stroke="url(#jellyGrad1)" stroke-width="2" fill="none" d="M 50,71 Q 45,125 55,160 Q 50,175 54,180" />
+                        <path stroke="url(#jellyGrad1)" stroke-width="2" fill="none" d="M 60,73 Q 66,110 60,152 Q 64,170 61,180" />
+                        <path stroke="url(#jellyGrad1)" stroke-width="2" fill="none" d="M 75,72 Q 80,105 72,148 Q 78,168 74,180" />
+                    </svg>
+
+                    <svg class="jelly-svg jelly-2" viewBox="0 0 100 180" width="70" height="126">
+                        <defs>
+                            <linearGradient id="jellyGrad2" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stop-color="#ff007f" stop-opacity="0.75" />
+                                <stop offset="60%" stop-color="#4e0078" stop-opacity="0.3" />
+                                <stop offset="100%" stop-color="#4e0078" stop-opacity="0" />
+                            </linearGradient>
+                        </defs>
+                        <path fill="url(#jellyGrad2)" d="M 15,50 C 15,15 85,15 85,50 C 85,60 75,65 50,60 C 25,65 15,60 15,50 Z" />
+                        <path stroke="url(#jellyGrad2)" stroke-width="1.5" fill="none" d="M 30,62 Q 25,95 32,130 M 42,63 Q 47,100 40,135 M 50,61 Q 48,105 52,140 M 58,63 Q 62,95 57,132 M 70,62 Q 74,90 68,128" />
+                    </svg>
+                </div>
+            </div>
+
+            <div class="section-content">
+                <div class="visual-badge">1,000m - The Mesopelagic</div>
+                <h2>The Twilight Zone</h2>
+                <p class="tagline font-accent">The realm of fading embers.</p>
+                <p class="description">Sunlight rapidly dimishes to total darkness at 1,000 meters. Temperatures hover just above freezing. Here, creatures rely on incredible eyes and shadowy camouflage to survive the cold, pressurized depths.</p>
+            </div>
+        </section>
+
+        <!-- SECTION 4: MIDNIGHT ZONE -->
+        <section id="midnight" class="parallax-section" data-index="3">
+            <div class="layer bg-layer" data-speed="0.15">
+                <div class="darkness-overlay"></div>
+                <!-- Bioluminescent particles/stars -->
+                <div class="biolum-particles" id="biolumParticles"></div>
+            </div>
+
+            <div class="layer mid-layer" data-speed="0.5">
+                <!-- Bioluminescent Anglerfish -->
+                <div class="angler-wrapper">
+                    <svg class="angler-svg" viewBox="0 0 200 150" width="220" height="165">
+                        <defs>
+                            <radialGradient id="lureGlow" cx="50%" cy="50%" r="50%">
+                                <stop offset="0%" stop-color="#e0f7fa" stop-opacity="1" />
+                                <stop offset="30%" stop-color="#00f3ff" stop-opacity="0.8" />
+                                <stop offset="100%" stop-color="#00f3ff" stop-opacity="0" />
+                            </radialGradient>
+                        </defs>
+                        <!-- Lure Glow -->
+                        <circle cx="150" cy="25" r="22" fill="url(#lureGlow)" class="glow-pulse" />
+                        <!-- Esca stalk -->
+                        <path d="M 70,65 Q 120,-10 150,22" fill="none" stroke="#263238" stroke-width="2.5" />
+                        <!-- Body -->
+                        <path fill="#0d1117" stroke="#1f242e" stroke-width="1.5" d="M 20,70 C 15,35 90,30 110,60 C 130,45 150,75 140,95 C 130,110 90,120 70,115 C 30,115 25,95 20,70 Z" />
+                        <!-- Giant Jaw & Sharp Teeth -->
+                        <path fill="#05070a" d="M 90,75 Q 125,75 125,95 Q 100,110 85,98 Z" />
+                        <polygon points="95,76 98,82 101,76" fill="#ffffff" />
+                        <polygon points="104,76 107,85 110,76" fill="#ffffff" />
+                        <polygon points="112,77 116,88 120,77" fill="#ffffff" />
+                        <polygon points="90,95 93,88 97,95" fill="#ffffff" />
+                        <polygon points="101,96 104,86 108,96" fill="#ffffff" />
+                        <!-- Eye (White bead) -->
+                        <circle cx="95" cy="55" r="3.5" fill="#00f3ff" />
+                        <circle cx="94" cy="54" r="1" fill="#ffffff" />
+                        <!-- Fins -->
+                        <path fill="#1a2332" opacity="0.8" d="M 40,110 C 35,125 20,135 15,130 C 20,118 35,112 40,110 Z" />
+                        <path fill="#1a2332" opacity="0.8" d="M 20,70 C 10,72 2,65 0,72 C 3,78 12,75 20,70 Z" />
+                    </svg>
+                </div>
+            </div>
+
+            <div class="layer fore-layer" data-speed="0.85">
+                <!-- Hydrothermal Vents and smoke particles -->
+                <svg class="vent-svg" viewBox="0 0 1440 600" preserveAspectRatio="none">
+                    <defs>
+                        <linearGradient id="ventGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#0a0f18" />
+                            <stop offset="100%" stop-color="#020408" />
+                        </linearGradient>
+                    </defs>
+                    <!-- Left chimney -->
+                    <path fill="url(#ventGrad)" stroke="#1a233a" stroke-width="1.5" d="M 150,600 L 190,380 L 230,380 L 280,600 Z" />
+                    <ellipse cx="210" cy="380" rx="20" ry="6" fill="#d81b60" opacity="0.4" />
+                    <!-- Right chimney -->
+                    <path fill="url(#ventGrad)" stroke="#1a233a" stroke-width="1.5" d="M 1100,600 L 1140,430 L 1175,430 L 1220,600 Z" />
+                    <ellipse cx="1157" cy="430" rx="17" ry="5" fill="#d81b60" opacity="0.4" />
+                </svg>
+                <div class="smoke-particles" id="smokeLeft"></div>
+                <div class="smoke-particles" id="smokeRight"></div>
+            </div>
+
+            <div class="section-content">
+                <div class="visual-badge">4,000m - The Bathypelagic</div>
+                <h2>The Midnight Zone</h2>
+                <p class="tagline font-accent">A sanctuary of cold fires.</p>
+                <p class="description">Reaching down to 4,000 meters, this zone is completely devoid of solar light. The water pressure is crushing, and temperatures remain close to freezing. Organisms have developed stunning bioluminescent displays for hunting and communication.</p>
+            </div>
+        </section>
+
+        <!-- SECTION 5: HADAL TRENCH -->
+        <section id="trench" class="parallax-section" data-index="4">
+            <div class="layer bg-layer" data-speed="0.2">
+                <div class="abyss-gradient"></div>
+                <!-- Glowing thermal dust / deep-sea plankton -->
+                <div class="hadal-dust" id="hadalDust"></div>
+                <!-- Soft glow cracks in background canyon -->
+                <svg class="canyon-bg" viewBox="0 0 1440 800" preserveAspectRatio="none">
+                    <path fill="#030508" d="M -50,800 L 200,450 L 500,490 L 800,420 L 1100,470 L 1500,800 Z" />
+                </svg>
+            </div>
+
+            <div class="layer mid-layer" data-speed="0.5">
+                <!-- Deep-sea Submersible exploring -->
+                <div class="submersible-wrapper">
+                    <svg class="sub-explore" viewBox="0 0 120 70" width="130" height="76">
+                        <!-- Spotlights -->
+                        <polygon points="95,35 240,0 240,80" fill="url(#lightCone)" opacity="0.15" />
+                        <defs>
+                            <linearGradient id="lightCone" x1="0%" y1="50%" x2="100%" y2="50%">
+                                <stop offset="0%" stop-color="#fffbde" stop-opacity="0.8" />
+                                <stop offset="100%" stop-color="#00f3ff" stop-opacity="0" />
+                            </linearGradient>
+                        </defs>
+                        <!-- Sub body -->
+                        <rect x="25" y="15" width="70" height="40" rx="20" fill="#ffab00" />
+                        <path d="M 95,25 A 15,15 0 0 1 95,55 Z" fill="#cfd8dc" />
+                        <rect x="45" y="8" width="30" height="8" rx="2" fill="#37474f" />
+                        <circle cx="50" cy="35" r="6" fill="#37474f" stroke="#ffffff" stroke-width="1.5" />
+                        <circle cx="75" cy="35" r="6" fill="#37474f" stroke="#ffffff" stroke-width="1.5" />
+                        <!-- Rear propeller -->
+                        <rect x="15" y="30" width="10" height="10" fill="#37474f" />
+                        <path d="M 12,20 L 18,50 Z" stroke="#37474f" stroke-width="4" />
+                        <!-- Robotic arm -->
+                        <path d="M 95,50 L 110,62 L 105,68" stroke="#37474f" stroke-dasharray="none" stroke-width="3" fill="none" stroke-linecap="round" />
+                    </svg>
+                </div>
+            </div>
+
+            <div class="layer fore-layer" data-speed="0.8">
+                <!-- Giant Trench Fissure & Kraken Tentacles -->
+                <svg class="trench-fore" viewBox="0 0 1440 900" preserveAspectRatio="none">
+                    <defs>
+                        <linearGradient id="canyonGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#020305" />
+                            <stop offset="100%" stop-color="#000000" />
+                        </linearGradient>
+                    </defs>
+                    <!-- Left and right canyon walls -->
+                    <path fill="url(#canyonGrad)" d="M 0,900 L 0,350 C 150,420 280,480 320,620 C 350,720 300,850 400,900 Z"/>
+                    <path fill="url(#canyonGrad)" d="M 1440,900 L 1440,300 C 1300,380 1150,440 1120,590 C 1080,700 1150,820 1020,900 Z"/>
+                    <!-- Tectonic floor crack glowing -->
+                    <path d="M 380,900 Q 720,860 1040,900" fill="none" stroke="#00f3ff" stroke-width="6" opacity="0.85" style="filter: drop-shadow(0px 0px 12px #00f3ff);" />
+                    <!-- Giant Kraken Tentacles waving from deep cracks -->
+                    <g class="kraken-tentacles">
+                        <path class="tentacle-1" fill="#140a1d" stroke="#251235" stroke-width="2" d="M 300,900 C 260,820 250,700 320,600 C 330,580 310,580 300,600 C 230,710 240,830 270,900 Z"/>
+                        <path class="tentacle-2" fill="#140a1d" stroke="#251235" stroke-width="2" d="M 1120,900 C 1160,810 1190,680 1110,570 C 1100,550 1080,560 1100,580 C 1170,690 1130,810 1090,900 Z"/>
+                    </g>
+                </svg>
+            </div>
+
+            <div class="section-content">
+                <div class="visual-badge">11,000m - The Hadal Zone</div>
+                <h2>The Hadal Trench</h2>
+                <p class="tagline font-accent">The absolute edge of the abyss.</p>
+                <p class="description">Plunging over 11,000 meters down into the Mariana Trench. In this domain of ultimate silence and crushing weight, hydrothermal vents feed highly specialized ecosystems. You have successfully explored the deepest limits of planet Earth.</p>
+                
+                <!-- Complete Button -->
+                <a href="#surface" class="ascend-btn">
+                    <svg viewBox="0 0 24 24" width="20" height="20">
+                        <path fill="currentColor" d="M12,2L1,21H23L12,2M12,6L18.8,18H5.2L12,6M12,10L8,14H11V16H13V14H16L12,10Z"/>
+                    </svg>
+                    Ascend to the Surface
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
